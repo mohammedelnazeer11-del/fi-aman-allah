@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 const API_KEY = "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";
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 const HTML = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
 
