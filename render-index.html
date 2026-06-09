@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0F1117" />
+  <title>في أمان الله</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0F1117; font-family: 'Tajawal', sans-serif; direction: rtl; color: #C4C0B8; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideIn { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:translateX(0)} }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: rgba(126,203,181,0.15); border-radius: 2px; }
+    textarea::placeholder { color: #3A3830; }
+    button:focus { outline: none; }
+    #app { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; }
+    #name-screen {
+      position: fixed; inset: 0; background: #0F1117;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 32px 24px; z-index: 100; animation: fadeIn 0.5s ease;
+    }
+    #name-screen .logo {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #7ECBB5, #5BA898);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; margin-bottom: 24px;
+      box-shadow: 0 0 40px rgba(126,203,181,0.25);
+    }
+    #name-screen h1 { font-size: 26px; font-weight: 700; color: #7ECBB5; margin-bottom: 8px; }
+    #name-screen p { font-size: 15px; color: #6B6860; margin-bottom: 36px; text-align: center; line-height: 1.7; }
+    #name-screen input {
+      width: 100%; max-width: 340px; padding: 14px 20px;
+      border-radius: 24px; border: 1.5px solid rgba(126,203,181,0.25);
+      background: rgba(255,255,255,0.04); color: #E8E4DC;
+      font-size: 16px; font-family: 'Tajawal', sans-serif;
+      outline: none; text-align: center; margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    #name-screen input:focus { border-color: rgba(126,203,181,0.5); }
+    #name-screen button {
+      width: 100%; max-width: 340px; padding: 14px;
+      border-radius: 24px; border: none;
+      background: linear-gradient(135deg, #7ECBB5, #5BA898);
+      color: #fff; font-size: 16px; font-weight: 600;
+      font-family: 'Tajawal', sans-serif; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(126,203,181,0.3); transition: opacity 0.2s;
+    }
+    #header {
+      width: 100%; max-width: 720px; padding: 18px 20px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(126,203,181,0.1);
+      position: sticky; top: 0;
+      background: rgba(15,17,23,0.92); backdrop-filter: blur(16px); z-index: 10;
+    }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #7ECBB5, #5BA898); display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 24px rgba(126,203,181,0.2); }
+    .avatar-sm { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #7ECBB5, #5BA898); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    #chat { flex: 1; width: 100%; max-width: 720px; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 14px; }
+    #welcome { text-align: center; padding: 28px 8px 8px; animation: fadeIn 0.5s ease; }
+    .mood-btn { padding: 7px 13px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); color: #7A7670; cursor: pointer; font-size: 13px; font-family: 'Tajawal', sans-serif; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s; margin: 4px; }
+    .mood-btn.active { border-color: #7ECBB5; background: rgba(126,203,181,0.13); color: #7ECBB5; }
+    .starter-btn { padding: 11px 18px; border-radius: 14px; border: 1px solid rgba(126,203,181,0.12); background: rgba(126,203,181,0.04); color: #9A9690; cursor: pointer; font-size: 14px; text-align: right; font-family: 'Tajawal', sans-serif; transition: all 0.2s; width: 100%; }
+    .starter-btn:hover { background: rgba(126,203,181,0.1); color: #C4C0B8; }
+    .msg-row { display: flex; align-items: flex-end; gap: 8px; animation: slideIn 0.3s ease; }
+    .msg-row.user { flex-direction: row-reverse; }
+    .bubble { max-width: 75%; padding: 11px 15px; font-size: 15px; line-height: 1.7; white-space: pre-wrap; }
+    .bubble.user { border-radius: 18px 4px 18px 18px; background: rgba(126,203,181,0.14); border: 1px solid rgba(126,203,181,0.22); color: #D5F0E8; }
+    .bubble.bot { border-radius: 4px 18px 18px 18px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.06); color: #C4C0B8; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #7ECBB5; opacity: 0.7; }
+    #input-area { width: 100%; max-width: 720px; padding: 12px 16px 20px; border-top: 1px solid rgba(126,203,181,0.08); background: rgba(15,17,23,0.95); backdrop-filter: blur(16px); position: sticky; bottom: 0; }
+    #suggestions { display: flex; gap: 7px; margin-bottom: 10px; flex-wrap: wrap; }
+    .sug-btn { padding: 5px 12px; border-radius: 20px; font-size: 12px; border: 1px solid rgba(126,203,181,0.18); background: transparent; color: #7ECBB5; cursor: pointer; font-family: 'Tajawal', sans-serif; }
+    #msg-input { flex: 1; padding: 12px 18px; border-radius: 24px; border: 1.5px solid rgba(126,203,181,0.18); background: rgba(255,255,255,0.04); color: #E8E4DC; font-size: 15px; resize: none; outline: none; font-family: 'Tajawal', sans-serif; direction: rtl; line-height: 1.6; max-height: 120px; overflow-y: auto; transition: border-color 0.2s; }
+    #msg-input:focus { border-color: rgba(126,203,181,0.45); }
+    #send-btn { width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s; color: #444; background: rgba(255,255,255,0.05); }
+    #send-btn.active { background: linear-gradient(135deg, #7ECBB5, #5BA898); box-shadow: 0 4px 18px rgba(126,203,181,0.28); color: #fff; }
+    #new-session-btn { padding: 6px 14px; border-radius: 20px; font-size: 12px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: #6B6860; cursor: pointer; font-family: 'Tajawal', sans-serif; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="name-screen">
+    <div class="logo">🌿</div>
+    <h1>في أمان الله</h1>
+    <p>رفيقك النفسي الرقمي<br/>قبل أن نبدأ، أخبرني باسمك</p>
+    <input type="text" id="name-input" placeholder="اكتب اسمك هنا..." maxlength="30" />
+    <button onclick="startSession()">ابدأ الجلسة</button>
+  </div>
+  <div id="header" style="display:none">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="avatar">🌿</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:#E8E4DC">في أمان الله</div>
+        <div id="status" style="font-size:11px;color:#5A9E8E;margin-top:1px">سلام — رفيقك النفسي</div>
+      </div>
+    </div>
+    <button id="new-session-btn" onclick="newSession()" style="display:none">جلسة جديدة</button>
+  </div>
+  <div id="chat"><div id="welcome"></div></div>
+  <div id="input-area" style="display:none">
+    <div id="suggestions" style="display:none"></div>
+    <div style="display:flex;gap:9px;align-items:flex-end">
+      <textarea id="msg-input" rows="1" placeholder="شاركني ما تشعر به..."></textarea>
+      <button id="send-btn" onclick="sendMessage()">⬆</button>
+    </div>
+    <div style="text-align:center;font-size:11px;color:#2E2C28;margin-top:10px">في أمان الله — دعم نفسي • في الأزمات تواصل مع متخصص</div>
+  </div>
+</div>
+<script>
+let userName = "", messages = [], loading = false;
+const GREETINGS = {
+  morning:{text:"صباح الطمأنينة",sub:"كيف بدأ يومك؟"},
+  afternoon:{text:"مرحباً بك",sub:"أنا هنا للاستماع إليك"},
+  evening:{text:"مساء السكينة",sub:"كيف حالك الآن؟"},
+  night:{text:"الليل وقت للراحة",sub:"ماذا يشغل بالك؟"},
+};
+function getGreeting(){const h=new Date().getHours();if(h>=5&&h<12)return GREETINGS.morning;if(h>=12&&h<17)return GREETINGS.afternoon;if(h>=17&&h<21)return GREETINGS.evening;return GREETINGS.night;}
+const MOODS=[{emoji:"😔",label:"حزين"},{emoji:"😰",label:"قلق"},{emoji:"😤",label:"غاضب"},{emoji:"😶",label:"بخير"},{emoji:"😊",label:"سعيد"}];
+const STARTERS=["أشعر بقلق شديد اليوم","لا أستطيع النوم بسبب أفكاري","أحتاج أن أتحدث عن شيء أزعجني","أشعر بالإرهاق من كل شيء"];
+function startSession(){
+  const inp=document.getElementById("name-input").value.trim();
+  if(!inp){document.getElementById("name-input").focus();return;}
+  userName=inp;
+  document.getElementById("name-screen").style.display="none";
+  document.getElementById("header").style.display="flex";
+  document.getElementById("input-area").style.display="block";
+  showWelcome();
+}
+document.getElementById("name-input").addEventListener("keydown",e=>{if(e.key==="Enter")startSession();});
+function showWelcome(){
+  const g=getGreeting();
+  document.getElementById("welcome").innerHTML=`
+    <div style="font-size:26px;font-weight:700;color:#7ECBB5;margin-bottom:6px">${g.text}</div>
+    <div style="font-size:16px;color:#7ECBB5;font-weight:500;margin-bottom:4px">أهلاً يا ${userName} 🌿</div>
+    <div style="font-size:14px;color:#6B6860;margin-bottom:28px">${g.sub}</div>
+    <div style="background:rgba(255,255,255,0.025);border-radius:16px;padding:18px 16px;border:1px solid rgba(126,203,181,0.08);margin-bottom:24px;max-width:400px;margin:0 auto 24px">
+      <div style="font-size:13px;color:#5A5650;margin-bottom:12px">كيف تشعر الآن؟</div>
+      <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap">
+        ${MOODS.map(m=>`<button class="mood-btn" onclick="selectMood(this)">${m.emoji} ${m.label}</button>`).join("")}
+      </div>
+    </div>
+    <div style="font-size:12px;color:#4A4840;margin-bottom:10px">ابدأ بـ</div>
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:420px;margin:0 auto">
+      ${STARTERS.map(s=>`<button class="starter-btn" onclick="quickSend('${s}')">${s}</button>`).join("")}
+    </div>`;
+}
+function selectMood(btn){document.querySelectorAll(".mood-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");}
+function quickSend(text){sendMessage(text);}
+function getSystemPrompt(){return `أنت معالج نفسي متخصص وذو خبرة عميقة. اسمك "سلام". أسلوبك دافئ، هادئ، وغير حكمي.\n\nاسم المستخدم هو: ${userName}\nناديه باسمه بشكل طبيعي في ردودك، مثلاً "حسناً يا ${userName}" أو "أفهمك يا ${userName}" — لكن لا تفرط في ذكر الاسم في كل جملة.\n\nمهمتك:\n- الاستماع بعمق لما يشاركه المستخدم\n- طرح أسئلة مدروسة لفهم مشاعره بشكل أعمق\n- مساعدته على استكشاف أفكاره وعواطفه بنفسه\n- تقديم تقنيات عملية عند الحاجة\n- التحقق من سلامته برفق عند الضرورة\n- الإشارة إلى متخصص حقيقي إذا كانت الحالة تستدعي ذلك\n\nقواعد:\n- لا تقدم تشخيصات طبية\n- تكلم بالعربية الفصحى السهلة أو العامية الرقيقة\n- ردودك مختصرة (3-5 جمل)\n- كن مباشراً وإنسانياً`;}
+async function sendMessage(text){
+  const input=document.getElementById("msg-input");
+  const msg=text||input.value.trim();
+  if(!msg||loading)return;
+  input.value=""; updateSendBtn();
+  addMessage("user",msg);
+  messages.push({role:"user",content:msg});
+  document.getElementById("welcome").style.display="none";
+  document.getElementById("new-session-btn").style.display="block";
+  showSuggestions(false);
+  loading=true; setStatus("يكتب...",true); showTyping(true);
+  try{
+    const res=await fetch("/api/chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:getSystemPrompt(),messages})
+    });
+    const data=await res.json();
+    const reply=data.content?.map(b=>b.text||"").join("")||"عذراً، لم أتمكن من الرد الآن.";
+    messages.push({role:"assistant",content:reply});
+    showTyping(false); addMessage("bot",reply); showSuggestions(true);
+  }catch{showTyping(false);addMessage("bot","حدث خطأ في الاتصال. يرجى المحاولة مجدداً.");}
+  finally{loading=false;setStatus("سلام — رفيقك النفسي",false);input.focus();}
+}
+function addMessage(role,text){
+  const chat=document.getElementById("chat");
+  const row=document.createElement("div");
+  row.className=`msg-row ${role==="user"?"user":""}`;
+  row.innerHTML=role==="bot"?`<div class="avatar-sm">🌿</div><div class="bubble bot">${text}</div>`:`<div class="bubble user">${text}</div>`;
+  chat.appendChild(row);
+  row.scrollIntoView({behavior:"smooth",block:"end"});
+}
+function showTyping(show){
+  const ex=document.getElementById("typing-row");
+  if(ex)ex.remove();
+  if(!show)return;
+  const chat=document.getElementById("chat");
+  const row=document.createElement("div");
+  row.id="typing-row"; row.className="msg-row";
+  row.innerHTML=`<div class="avatar-sm">🌿</div><div class="bubble bot" style="display:flex;gap:5px;align-items:center"><div class="dot" style="animation:bounce 1.2s 0s infinite"></div><div class="dot" style="animation:bounce 1.2s 0.2s infinite"></div><div class="dot" style="animation:bounce 1.2s 0.4s infinite"></div></div>`;
+  chat.appendChild(row);
+  row.scrollIntoView({behavior:"smooth",block:"end"});
+}
+function showSuggestions(show){
+  const sug=document.getElementById("suggestions");
+  if(!show){sug.style.display="none";return;}
+  sug.style.display="flex";
+  sug.innerHTML=["أخبرني أكثر","كيف أتعامل مع هذا؟","أشعر بتحسن"].map(q=>`<button class="sug-btn" onclick="quickSend('${q}')">${q}</button>`).join("");
+}
+function setStatus(text,active){const s=document.getElementById("status");s.textContent=text;s.style.color=active?"#7ECBB5":"#5A9E8E";}
+function updateSendBtn(){const btn=document.getElementById("send-btn");const val=document.getElementById("msg-input").value.trim();btn.className=val?"active":"";}
+function newSession(){messages=[];document.getElementById("chat").innerHTML='<div id="welcome"></div>';showWelcome();document.getElementById("new-session-btn").style.display="none";showSuggestions(false);}
+document.getElementById("msg-input").addEventListener("input",updateSendBtn);
+document.getElementById("msg-input").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}});
+</script>
+</body>
+</html>
